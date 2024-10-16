@@ -64,3 +64,5 @@ and inserts the respective data.
 The project setup was quite difficult, as I am missing some linux and docker experience.
 After some try and errors and support from ChatGPT I made it finally work
 
+### 16.10.2024
+asdf
