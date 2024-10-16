@@ -1,9 +1,5 @@
 # W3Schools Database in Docker
 
-Forked from https://github.com/AndrejPHP/w3schools-database for academic purposes.
-
-This repository provides:
-
 - a docker compose which sets up the DB on port 3309 (non-default, no clashes)
 - initializes the database data from w3schools (provided by @AndrejPHP) 
 - Visual Studio Code config
