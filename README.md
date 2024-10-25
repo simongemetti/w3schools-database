@@ -66,3 +66,7 @@ After some try and errors and support from ChatGPT I made it finally work
 
 ### 16.10.2024
 asdf
+
+
+### 25.10.2024
+Setup of my own Single Page Application
