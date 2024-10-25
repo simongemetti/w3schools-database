@@ -2,190 +2,148 @@ import React, { useEffect, useState } from 'react';
 
 const api = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
-function CategoryList() {
-  const [categories, setCategories] = useState([]);
-  const [editableCategoryId, setEditableCategoryId] = useState(null); // Track which category is being edited
-  const [editedCategory, setEditedCategory] = useState({}); // Track changes to the edited category
+function CustomerList() {
+  const [customers, setCustomers] = useState([]);
+  const [editableCustomerId, setEditableCustomerId] = useState(null); // Track which customer is being edited
+  const [editedCustomer, setEditedCustomer] = useState({}); // Track changes to the edited customer
+  const [showAll, setShowAll] = useState(false); // Track whether to show all customers or just the first 15
 
   useEffect(() => {
-    fetch(`${api}/categories`)
+    fetch(`${api}/customers`) // Passe dies an den korrekten Endpunkt der W3Schools API an
       .then(response => response.json())
-      .then(data => setCategories(data));
+      .then(data => setCustomers(data));
   }, []);
 
-  // Handle input change for editing category
-  const handleInputChange = (categoryId, field, value) => {
-    setEditedCategory(prev => ({
+  const handleInputChange = (customerId, field, value) => {
+    setEditedCustomer(prev => ({
       ...prev,
-      [categoryId]: {
-        ...prev[categoryId],
+      [customerId]: {
+        ...prev[customerId],
         [field]: value,
       },
     }));
   };
 
-  // Handle patch request for category update
-  const handleSave = (categoryId) => {
-    const updatedCategory = editedCategory[categoryId];
-    fetch(`${api}/categories/${categoryId}`, {
+  const handleSave = (customerId) => {
+    const updatedCustomer = editedCustomer[customerId];
+    fetch(`${api}/customers/${customerId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedCategory),
+      body: JSON.stringify(updatedCustomer),
     })
       .then(response => {
         if (response.ok) {
-          setCategories(categories.map(category =>
-            category.CategoryID === categoryId ? { ...category, ...updatedCategory } : category
+          setCustomers(customers.map(customer =>
+            customer.CustomerID === customerId ? { ...customer, ...updatedCustomer } : customer
           ));
-          setEditableCategoryId(null); // Exit edit mode
-        }
-        else {
-          alert('Failed to update category');
+          setEditableCustomerId(null); // Exit edit mode
+        } else {
+          alert('Failed to update customer');
         }
       });
   };
 
-  // Handle delete request
-  const handleDelete = (categoryId) => {
-    fetch(`${api}/categories/${categoryId}`, {
+  const handleDelete = (customerId) => {
+    fetch(`${api}/customers/${customerId}`, {
       method: 'DELETE',
     })
       .then(response => {
         if (response.ok) {
-          setCategories(categories.filter(category => category.CategoryID !== categoryId));
-        }
-        else {
-          alert('Failed to delete category');
+          setCustomers(customers.filter(customer => customer.CustomerID !== customerId));
+        } else {
+          alert('Failed to delete customer');
         }
       });
   };
 
+  const displayedCustomers = showAll ? customers : customers.slice(0, 15);
+
   return (
-    
     <div className="container mx-auto p-4">
-      <nav>
-        <div>
-
-        </div>
-        <ul>
-          <li><a>Test</a></li>
-          <li><a>Test</a></li>
-          <li><a>Test</a></li>
-          <li><a>Test</a></li>
-        </ul>
-      </nav>
-      <h1 className="text-2xl font-bold mb-4">Categories</h1>
-      <button 
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-        onClick={() => setEditableCategoryId('new')}
-      >
-        Add New Category
-      </button>
-      {editableCategoryId === 'new' && (
-        <div className="mb-4 p-4 border rounded">
-          <input
-            className="border p-2 mb-2 w-full"
-            type="text"
-            placeholder="Category Name"
-            value={editedCategory['new']?.CategoryName || ''}
-            onChange={(e) => handleInputChange('new', 'CategoryName', e.target.value)}
-          />
-          <input
-            className="border p-2 mb-2 w-full"
-            type="text"
-            placeholder="Description"
-            value={editedCategory['new']?.Description || ''}
-            onChange={(e) => handleInputChange('new', 'Description', e.target.value)}
-          />
-          <div className="flex space-x-2">
-            <button
-              className="bg-green-500 text-white px-4 py-2 rounded"
-              onClick={() => {
-                const newCategory = editedCategory['new'];
-                fetch(`${api}/categories`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(newCategory),
-                })
-                  .then(response => response.json())
-                  .then(data => {
-                    setCategories([...categories, data]);
-                    setEditableCategoryId(null);
-                    setEditedCategory(prev => {
-                      const { new: _, ...rest } = prev;
-                      return rest;
-                    });
-                    window.location.reload(); // Refresh the page
-                  });
-              }}
-            >
-              Save
-            </button>
-            <button 
-              className="bg-red-500 text-white px-4 py-2 rounded"
-              onClick={() => setEditableCategoryId(null)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
+      <h1 className="text-2xl font-bold mb-4">Customers</h1>
       <table className="min-w-full bg-white border">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">Category Name</th>
-            <th className="py-2 px-4 border-b">Description</th>
+            <th className="py-2 px-4 border-b">Customer Name</th>
+            <th className="py-2 px-4 border-b">Address</th>
+            <th className="py-2 px-4 border-b">Postal Code</th>
+            <th className="py-2 px-4 border-b">Country</th>
             <th className="py-2 px-4 border-b">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {categories.map(category => (
-            <tr key={category.CategoryID} className="hover:bg-gray-100">
+          {displayedCustomers.map(customer => (
+            <tr key={customer.CustomerID} className="hover:bg-gray-100">
               <td className="py-2 px-4 border-b">
-                {editableCategoryId === category.CategoryID ? (
+                {editableCustomerId === customer.CustomerID ? (
                   <input
                     className="border p-2 w-full"
                     type="text"
-                    value={editedCategory[category.CategoryID]?.CategoryName || category.CategoryName}
+                    value={editedCustomer[customer.CustomerID]?.CustomerName || customer.CustomerName}
                     onChange={(e) =>
-                      handleInputChange(category.CategoryID, 'CategoryName', e.target.value)
+                      handleInputChange(customer.CustomerID, 'CustomerName', e.target.value)
                     }
                   />
                 ) : (
-                  category.CategoryName
+                  customer.CustomerName
                 )}
               </td>
               <td className="py-2 px-4 border-b">
-                {editableCategoryId === category.CategoryID ? (
+                {editableCustomerId === customer.CustomerID ? (
                   <input
                     className="border p-2 w-full"
                     type="text"
-                    value={editedCategory[category.CategoryID]?.Description || category.Description}
+                    value={editedCustomer[customer.CustomerID]?.Address || customer.Address}
                     onChange={(e) =>
-                      handleInputChange(category.CategoryID, 'Description', e.target.value)
+                      handleInputChange(customer.CustomerID, 'Address', e.target.value)
                     }
                   />
                 ) : (
-                  category.Description
+                  customer.Address
                 )}
               </td>
               <td className="py-2 px-4 border-b">
-                {editableCategoryId === category.CategoryID ? (
+                {editableCustomerId === customer.CustomerID ? (
+                  <input
+                    className="border p-2 w-full"
+                    type="text"
+                    value={editedCustomer[customer.CustomerID]?.PostalCode || customer.PostalCode}
+                    onChange={(e) =>
+                      handleInputChange(customer.CustomerID, 'PostalCode', e.target.value)
+                    }
+                  />
+                ) : (
+                  customer.PostalCode
+                )}
+              </td>
+              <td className="py-2 px-4 border-b">
+                {editableCustomerId === customer.CustomerID ? (
+                  <input
+                    className="border p-2 w-full"
+                    type="text"
+                    value={editedCustomer[customer.CustomerID]?.Country || customer.Country}
+                    onChange={(e) =>
+                      handleInputChange(customer.CustomerID, 'Country', e.target.value)
+                    }
+                  />
+                ) : (
+                  customer.Country
+                )}
+              </td>
+              <td className="py-2 px-4 border-b">
+                {editableCustomerId === customer.CustomerID ? (
                   <div className="flex space-x-2">
                     <button 
                       className="bg-green-500 text-white px-4 py-2 rounded"
-                      onClick={() => handleSave(category.CategoryID)}
+                      onClick={() => handleSave(customer.CustomerID)}
                     >
                       Save
                     </button>
                     <button 
                       className="bg-red-500 text-white px-4 py-2 rounded"
-                      onClick={() => setEditableCategoryId(null)}
+                      onClick={() => setEditableCustomerId(null)}
                     >
                       Cancel
                     </button>
@@ -194,13 +152,13 @@ function CategoryList() {
                   <div className="flex space-x-2">
                     <button 
                       className="bg-yellow-500 text-white px-4 py-2 rounded"
-                      onClick={() => setEditableCategoryId(category.CategoryID)}
+                      onClick={() => setEditableCustomerId(customer.CustomerID)}
                     >
                       Edit
                     </button>
                     <button 
                       className="bg-red-500 text-white px-4 py-2 rounded"
-                      onClick={() => handleDelete(category.CategoryID)}
+                      onClick={() => handleDelete(customer.CustomerID)}
                     >
                       Delete
                     </button>
@@ -211,8 +169,17 @@ function CategoryList() {
           ))}
         </tbody>
       </table>
+
+      {customers.length > 15 && (
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          onClick={() => setShowAll(!showAll)}
+        >
+          {showAll ? 'Show Less' : 'Show More'}
+        </button>
+      )}
     </div>
   );
 }
 
-export default CategoryList;
+export default CustomerList;
