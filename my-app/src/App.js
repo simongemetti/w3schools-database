@@ -61,25 +61,25 @@ function CustomerList() {
   const displayedCustomers = showAll ? customers : customers.slice(0, 15);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Customers</h1>
-      <table className="min-w-full bg-white border">
+    <div className="">
+      <h1 className="headline">Customers</h1>
+      <table className="tabelle1">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">Customer Name</th>
-            <th className="py-2 px-4 border-b">Address</th>
-            <th className="py-2 px-4 border-b">Postal Code</th>
-            <th className="py-2 px-4 border-b">Country</th>
-            <th className="py-2 px-4 border-b">Actions</th>
+            <th className="table_headline">Customer Name</th>
+            <th className="table_headline">Address</th>
+            <th className="table_headline">Postal Code</th>
+            <th className="table_headline">Country</th>
+            <th className="table_headline">Actions</th>
           </tr>
         </thead>
         <tbody>
           {displayedCustomers.map(customer => (
-            <tr key={customer.CustomerID} className="hover:bg-gray-100">
-              <td className="py-2 px-4 border-b">
+            <tr key={customer.CustomerID} className="tabellen_spalte">
+              <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (
                   <input
-                    className="border p-2 w-full"
+                    className=""
                     type="text"
                     value={editedCustomer[customer.CustomerID]?.CustomerName || customer.CustomerName}
                     onChange={(e) =>
@@ -90,10 +90,10 @@ function CustomerList() {
                   customer.CustomerName
                 )}
               </td>
-              <td className="py-2 px-4 border-b">
+              <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (
                   <input
-                    className="border p-2 w-full"
+                    className=""
                     type="text"
                     value={editedCustomer[customer.CustomerID]?.Address || customer.Address}
                     onChange={(e) =>
@@ -104,10 +104,10 @@ function CustomerList() {
                   customer.Address
                 )}
               </td>
-              <td className="py-2 px-4 border-b">
+              <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (
                   <input
-                    className="border p-2 w-full"
+                    className=""
                     type="text"
                     value={editedCustomer[customer.CustomerID]?.PostalCode || customer.PostalCode}
                     onChange={(e) =>
@@ -118,10 +118,10 @@ function CustomerList() {
                   customer.PostalCode
                 )}
               </td>
-              <td className="py-2 px-4 border-b">
+              <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (
                   <input
-                    className="border p-2 w-full"
+                    className=""
                     type="text"
                     value={editedCustomer[customer.CustomerID]?.Country || customer.Country}
                     onChange={(e) =>
@@ -132,32 +132,32 @@ function CustomerList() {
                   customer.Country
                 )}
               </td>
-              <td className="py-2 px-4 border-b">
+              <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (
-                  <div className="flex space-x-2">
+                  <div className="">
                     <button 
-                      className="bg-green-500 text-white px-4 py-2 rounded"
+                      className="button2"
                       onClick={() => handleSave(customer.CustomerID)}
                     >
                       Save
                     </button>
                     <button 
-                      className="bg-red-500 text-white px-4 py-2 rounded"
+                      className="button1"
                       onClick={() => setEditableCustomerId(null)}
                     >
                       Cancel
                     </button>
                   </div>
                 ) : (
-                  <div className="flex space-x-2">
+                  <div className="">
                     <button 
-                      className="bg-yellow-500 text-white px-4 py-2 rounded"
+                      className="button2"
                       onClick={() => setEditableCustomerId(customer.CustomerID)}
                     >
                       Edit
                     </button>
                     <button 
-                      className="bg-red-500 text-white px-4 py-2 rounded"
+                      className="button1"
                       onClick={() => handleDelete(customer.CustomerID)}
                     >
                       Delete
@@ -172,7 +172,7 @@ function CustomerList() {
 
       {customers.length > 15 && (
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          className="button3"
           onClick={() => setShowAll(!showAll)}
         >
           {showAll ? 'Show Less' : 'Show More'}

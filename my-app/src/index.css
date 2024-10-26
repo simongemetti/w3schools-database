@@ -1,3 +1,63 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+body{
+    background-color: rgb(240, 240, 240);
+    margin-left: 150px;
+    margin-right: 150px;
+    font-family: 'Roboto', sans-serif;
+}
+.headline{
+    color: rgb(0, 0, 0);
+}
+.tabelle1{
+    border: 1px solid color(grey);
+    box-shadow: 0 2px 4px rgba(0.4, 0.4, 0.4, 0.4);
+    border-radius: 10px;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+.table_headline{
+    border: 1px solid;
+    padding: 12px;
+    text-align: left;
+    color: white;
+    background-color: rgb(100, 0, 0);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    
+}
+
+.table_data{
+    padding: 10px;
+}
+
+.tabellen_spalte{
+    background-color: rgb(228, 228, 228);
+}
+.button1{
+    padding: 8px;
+    background-color: red;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    margin-left: 5px;
+}
+.button2{
+    padding: 8px;
+    background-color: green;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    margin-right: 5px;
+}
+.button3{
+    padding: 8px;
+    background-color: blue;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+}
