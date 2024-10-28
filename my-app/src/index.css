@@ -4,6 +4,32 @@ body{
     margin-right: 150px;
     font-family: 'Roboto', sans-serif;
 }
+.navbar-container{
+    width: 50%;
+    height: 60px;
+    display: flex;
+    justify-content: flex-start;
+    background-color: rgb(228, 228, 228);
+    border: 2px solid rgb(100, 0, 0);
+    border-radius: 10px;
+}
+.navbar{
+    text-decoration: none;
+}
+.navbar-links{
+    display: flex;
+    justify-content: flex-start;
+    gap: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: underline;
+    list-style-type: none;
+    color: rgb(100, 0, 0);
+}
+.navbar-links:hover{
+    color: black;
+    cursor: pointer;
+}
 .headline{
     color: rgb(0, 0, 0);
 }
