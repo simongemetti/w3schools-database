@@ -9,7 +9,9 @@ function CustomerList() {
   const [editedCustomer, setEditedCustomer] = useState({});
   const [newCustomer, setNewCustomer] = useState({ CustomerName: '', Address: '', PostalCode: '', Country: '' });
   const [message, setMessage] = useState('');
-  const [refresh, setRefresh] = useState(false); // Neue State-Variable für das Neuladen
+  const [refresh, setRefresh] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // State für die Suche
+  const [sortOrder, setSortOrder] = useState('asc'); // State für die Sortierreihenfolge
 
   // Fetch the last 10 customers from the API on component load or refresh
   useEffect(() => {
@@ -17,7 +19,7 @@ function CustomerList() {
       .then(response => response.json())
       .then(data => setCustomers(data.slice(-10).reverse()))
       .catch(error => console.error("Error fetching customers:", error));
-  }, [refresh]); // Neu laden bei Änderungen an refresh
+  }, [refresh]);
 
   // Update form input for editing
   const handleInputChange = (customerId, field, value) => {
@@ -104,7 +106,7 @@ function CustomerList() {
         });
         setMessage('Customer registered successfully!');
         setNewCustomer({ CustomerName: '', Address: '', PostalCode: '', Country: '' });
-        setRefresh(!refresh); // Löst das Neuladen aus
+        setRefresh(!refresh);
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -114,12 +116,37 @@ function CustomerList() {
     }
   };
 
+  // Filter and sort customers based on search term and sort order
+  const filteredAndSortedCustomers = customers
+    .filter(customer => 
+      customer.CustomerName && customer.CustomerName.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => 
+      sortOrder === 'asc' 
+        ? a.CustomerName.localeCompare(b.CustomerName) 
+        : b.CustomerName.localeCompare(a.CustomerName)
+    );
+
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  const toggleSortOrder = () => setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+
   return (
     <div>
       <h1 className="headline">Customers</h1>
       
-      {/* Display success or error message */}
       {message && <p className="message">{message}</p>}
+
+      {/* Search and Sort */}
+      <input 
+        type="text" 
+        placeholder="Search by customer name" 
+        value={searchTerm} 
+        onChange={handleSearchChange} 
+        className="search-input" 
+      />
+      <button onClick={toggleSortOrder} className="sort-button">
+        Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
+      </button>
 
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
@@ -179,7 +206,7 @@ function CustomerList() {
           </tr>
         </thead>
         <tbody>
-          {customers.map(customer => (
+          {filteredAndSortedCustomers.map(customer => (
             <tr key={customer.CustomerID} className="tabellen_spalte">
               <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (

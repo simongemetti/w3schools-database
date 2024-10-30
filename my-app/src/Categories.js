@@ -9,7 +9,9 @@ function CategoryList() {
   const [editedCategory, setEditedCategory] = useState({});
   const [newCategory, setNewCategory] = useState({ CategoryName: '', Description: '' });
   const [message, setMessage] = useState('');
-  const [refresh, setRefresh] = useState(false); // State-Variable zum Neuladen der Kategorien
+  const [refresh, setRefresh] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // State für die Suche
+  const [sortOrder, setSortOrder] = useState('asc'); // State für die Sortierreihenfolge
 
   // Fetch categories from API on component load or when refresh state changes
   useEffect(() => {
@@ -104,7 +106,7 @@ function CategoryList() {
         });
         setMessage('Category registered successfully!');
         setNewCategory({ CategoryName: '', Description: '' });
-        setRefresh(!refresh); // Toggle refresh to reload categories
+        setRefresh(!refresh);
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -114,12 +116,37 @@ function CategoryList() {
     }
   };
 
+  // Filter and sort categories based on search term and sort order
+  const filteredAndSortedCategories = categories
+    .filter(category => 
+      category.CategoryName && category.CategoryName.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => 
+      sortOrder === 'asc' 
+        ? a.CategoryName.localeCompare(b.CategoryName) 
+        : b.CategoryName.localeCompare(a.CategoryName)
+    );
+
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  const toggleSortOrder = () => setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+
   return (
     <div>
       <h1 className="headline">Categories</h1>
 
-      {/* Display success or error message */}
       {message && <p className="message">{message}</p>}
+
+      {/* Search and Sort */}
+      <input
+        type="text"
+        placeholder="Search by category name"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="search-input"
+      />
+      <button onClick={toggleSortOrder} className="sort-button">
+        Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
+      </button>
 
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
@@ -157,7 +184,7 @@ function CategoryList() {
           </tr>
         </thead>
         <tbody>
-          {categories.map(category => (
+          {filteredAndSortedCategories.map(category => (
             <tr key={category.CategoryID} className="tabellen_spalte">
               <td className="table_data">
                 {editableCategoryId === category.CategoryID ? (
