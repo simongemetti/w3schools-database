@@ -87,3 +87,21 @@ body{
     color: white;
     font-size: 16px;
 }
+.anmeldung{
+    width: 80%;
+    height: 25px;
+    border: 1px solid grey;
+    border-radius: 5px;
+    gap: 5px;
+    display:flex; 
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+.anmelde-button{
+    padding: 8px;
+    background-color: green;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+}

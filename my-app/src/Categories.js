@@ -9,14 +9,15 @@ function CategoryList() {
   const [editedCategory, setEditedCategory] = useState({});
   const [newCategory, setNewCategory] = useState({ CategoryName: '', Description: '' });
   const [message, setMessage] = useState('');
+  const [refresh, setRefresh] = useState(false); // State-Variable zum Neuladen der Kategorien
 
-  // Fetch categories from API on component load
+  // Fetch categories from API on component load or when refresh state changes
   useEffect(() => {
-    fetch(`${api}/categories`)
+    fetch(`${api}/categories?limit=10&sort=desc`)
       .then(response => response.json())
-      .then(data => setCategories(data))
+      .then(data => setCategories(data.slice(-10).reverse()))
       .catch(error => console.error("Error fetching categories:", error));
-  }, []);
+  }, [refresh]);
 
   // Update form input for editing
   const handleInputChange = (categoryId, field, value) => {
@@ -44,13 +45,16 @@ function CategoryList() {
           setCategories(categories.map(category =>
             category.CategoryID === categoryId ? { ...category, ...updatedCategory } : category
           ));
-          setEditableCategoryId(null); // Exit edit mode
+          setEditableCategoryId(null);
           setMessage('Category updated successfully!');
         } else {
-          alert('Failed to update category');
+          setMessage('Failed to update category.');
         }
       })
-      .catch(error => console.error("Error updating category:", error));
+      .catch(error => {
+        console.error("Error updating category:", error);
+        setMessage('An error occurred while updating category.');
+      });
   };
 
   // Delete a category
@@ -63,10 +67,13 @@ function CategoryList() {
           setCategories(categories.filter(category => category.CategoryID !== categoryId));
           setMessage('Category deleted successfully!');
         } else {
-          alert('Failed to delete category');
+          setMessage('Failed to delete category.');
         }
       })
-      .catch(error => console.error("Error deleting category:", error));
+      .catch(error => {
+        console.error("Error deleting category:", error);
+        setMessage('An error occurred while deleting category.');
+      });
   };
 
   // Register a new category
@@ -91,9 +98,13 @@ function CategoryList() {
 
       if (response.ok) {
         const addedCategory = await response.json();
-        setCategories([...categories, addedCategory]);
+        setCategories(prevCategories => {
+          const updatedCategories = [...prevCategories, addedCategory];
+          return updatedCategories.slice(-10);
+        });
         setMessage('Category registered successfully!');
         setNewCategory({ CategoryName: '', Description: '' });
+        setRefresh(!refresh); // Toggle refresh to reload categories
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -103,18 +114,19 @@ function CategoryList() {
     }
   };
 
-  const displayedCategories = categories.slice(0, 10);
-
   return (
     <div>
       <h1 className="headline">Categories</h1>
-      
+
+      {/* Display success or error message */}
+      {message && <p className="message">{message}</p>}
+
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
         <h2>Register a Category</h2>
         <div>
           <label>Category Name:</label>
-          <input
+          <input className="anmeldung"
             type="text"
             name="CategoryName"
             value={newCategory.CategoryName}
@@ -124,7 +136,7 @@ function CategoryList() {
         </div>
         <div>
           <label>Description:</label>
-          <input
+          <input className="anmeldung"
             type="text"
             name="Description"
             value={newCategory.Description}
@@ -132,8 +144,7 @@ function CategoryList() {
             required
           />
         </div>
-        <button type="submit">Register</button>
-        {message && <p>{message}</p>}
+        <button className="anmelde-button" type="submit">Register</button>
       </form>
 
       {/* Category Table */}
@@ -146,7 +157,7 @@ function CategoryList() {
           </tr>
         </thead>
         <tbody>
-          {displayedCategories.map(category => (
+          {categories.map(category => (
             <tr key={category.CategoryID} className="tabellen_spalte">
               <td className="table_data">
                 {editableCategoryId === category.CategoryID ? (

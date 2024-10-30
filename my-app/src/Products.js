@@ -7,16 +7,17 @@ function ProductList() {
   const [products, setProducts] = useState([]);
   const [editableProductId, setEditableProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
-  const [newProduct, setNewProduct] = useState({ ProductName: '', Category: '', Price: '' });
+  const [newProduct, setNewProduct] = useState({ ProductName: '', Price: '' });
   const [message, setMessage] = useState('');
+  const [refresh, setRefresh] = useState(false); // State-Variable zum Neuladen der Produkte
 
-  // Fetch products from API on component load
+  // Fetch products from API on component load or when refresh state changes
   useEffect(() => {
-    fetch(`${api}/products`)
+    fetch(`${api}/products?limit=10&sort=desc`)
       .then(response => response.json())
-      .then(data => setProducts(data))
+      .then(data => setProducts(data.slice(-10).reverse()))
       .catch(error => console.error("Error fetching products:", error));
-  }, []);
+  }, [refresh]);
 
   // Update form input for editing
   const handleInputChange = (productId, field, value) => {
@@ -47,10 +48,13 @@ function ProductList() {
           setEditableProductId(null); // Exit edit mode
           setMessage('Product updated successfully!');
         } else {
-          alert('Failed to update product');
+          setMessage('Failed to update product.');
         }
       })
-      .catch(error => console.error("Error updating product:", error));
+      .catch(error => {
+        console.error("Error updating product:", error);
+        setMessage('An error occurred while updating product.');
+      });
   };
 
   // Delete a product
@@ -63,10 +67,13 @@ function ProductList() {
           setProducts(products.filter(product => product.ProductID !== productId));
           setMessage('Product deleted successfully!');
         } else {
-          alert('Failed to delete product');
+          setMessage('Failed to delete product.');
         }
       })
-      .catch(error => console.error("Error deleting product:", error));
+      .catch(error => {
+        console.error("Error deleting product:", error);
+        setMessage('An error occurred while deleting product.');
+      });
   };
 
   // Register a new product
@@ -91,9 +98,13 @@ function ProductList() {
 
       if (response.ok) {
         const addedProduct = await response.json();
-        setProducts([...products, addedProduct]);
+        setProducts(prevProducts => {
+          const updatedProducts = [...prevProducts, addedProduct];
+          return updatedProducts.slice(-10);
+        });
         setMessage('Product registered successfully!');
-        setNewProduct({ ProductName: '', Category: '', Price: '' });
+        setNewProduct({ ProductName: '', Price: '' });
+        setRefresh(!refresh); // Toggle refresh to reload products
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -103,18 +114,19 @@ function ProductList() {
     }
   };
 
-  const displayedProducts = products.slice(0, 10);
-
   return (
     <div>
       <h1 className="headline">Products</h1>
       
+      {/* Display success or error message */}
+      {message && <p className="message">{message}</p>}
+
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
         <h2>Register a Product</h2>
         <div>
           <label>Product Name:</label>
-          <input
+          <input className="anmeldung"
             type="text"
             name="ProductName"
             value={newProduct.ProductName}
@@ -123,18 +135,8 @@ function ProductList() {
           />
         </div>
         <div>
-          <label>Category:</label>
-          <input
-            type="text"
-            name="Category"
-            value={newProduct.Category}
-            onChange={handleNewProductChange}
-            required
-          />
-        </div>
-        <div>
           <label>Price:</label>
-          <input
+          <input className="anmeldung"
             type="text"
             name="Price"
             value={newProduct.Price}
@@ -142,8 +144,7 @@ function ProductList() {
             required
           />
         </div>
-        <button type="submit">Register</button>
-        {message && <p>{message}</p>}
+        <button className="anmelde-button" type="submit">Register</button>
       </form>
 
       {/* Product Table */}
@@ -151,13 +152,12 @@ function ProductList() {
         <thead>
           <tr>
             <th className="table_headline">Product Name</th>
-            <th className="table_headline">Category</th>
             <th className="table_headline">Price</th>
             <th className="table_headline">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {displayedProducts.map(product => (
+          {products.map(product => (
             <tr key={product.ProductID} className="tabellen_spalte">
               <td className="table_data">
                 {editableProductId === product.ProductID ? (
@@ -170,19 +170,6 @@ function ProductList() {
                   />
                 ) : (
                   product.ProductName
-                )}
-              </td>
-              <td className="table_data">
-                {editableProductId === product.ProductID ? (
-                  <input
-                    type="text"
-                    value={editedProduct[product.ProductID]?.Category || product.Category}
-                    onChange={(e) =>
-                      handleInputChange(product.ProductID, 'Category', e.target.value)
-                    }
-                  />
-                ) : (
-                  product.Category
                 )}
               </td>
               <td className="table_data">

@@ -9,14 +9,15 @@ function CustomerList() {
   const [editedCustomer, setEditedCustomer] = useState({});
   const [newCustomer, setNewCustomer] = useState({ CustomerName: '', Address: '', PostalCode: '', Country: '' });
   const [message, setMessage] = useState('');
+  const [refresh, setRefresh] = useState(false); // Neue State-Variable für das Neuladen
 
-  // Fetch customers from API on component load
+  // Fetch the last 10 customers from the API on component load or refresh
   useEffect(() => {
-    fetch(`${api}/customers`)
+    fetch(`${api}/customers?limit=10&sort=desc`)
       .then(response => response.json())
-      .then(data => setCustomers(data))
+      .then(data => setCustomers(data.slice(-10).reverse()))
       .catch(error => console.error("Error fetching customers:", error));
-  }, []);
+  }, [refresh]); // Neu laden bei Änderungen an `refresh`
 
   // Update form input for editing
   const handleInputChange = (customerId, field, value) => {
@@ -44,13 +45,16 @@ function CustomerList() {
           setCustomers(customers.map(customer =>
             customer.CustomerID === customerId ? { ...customer, ...updatedCustomer } : customer
           ));
-          setEditableCustomerId(null); // Exit edit mode
+          setEditableCustomerId(null);
           setMessage('Customer updated successfully!');
         } else {
-          alert('Failed to update customer');
+          setMessage('Failed to update customer.');
         }
       })
-      .catch(error => console.error("Error updating customer:", error));
+      .catch(error => {
+        console.error("Error updating customer:", error);
+        setMessage('An error occurred while updating customer.');
+      });
   };
 
   // Delete a customer
@@ -63,10 +67,13 @@ function CustomerList() {
           setCustomers(customers.filter(customer => customer.CustomerID !== customerId));
           setMessage('Customer deleted successfully!');
         } else {
-          alert('Failed to delete customer');
+          setMessage('Failed to delete customer.');
         }
       })
-      .catch(error => console.error("Error deleting customer:", error));
+      .catch(error => {
+        console.error("Error deleting customer:", error);
+        setMessage('An error occurred while deleting customer.');
+      });
   };
 
   // Register a new customer
@@ -91,9 +98,13 @@ function CustomerList() {
 
       if (response.ok) {
         const addedCustomer = await response.json();
-        setCustomers([...customers, addedCustomer]);
+        setCustomers(prevCustomers => {
+          const updatedCustomers = [...prevCustomers, addedCustomer];
+          return updatedCustomers.slice(-10);
+        });
         setMessage('Customer registered successfully!');
         setNewCustomer({ CustomerName: '', Address: '', PostalCode: '', Country: '' });
+        setRefresh(!refresh); // Löst das Neuladen aus
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -103,18 +114,19 @@ function CustomerList() {
     }
   };
 
-  const displayedCustomers = customers.slice(0, 10);
-
   return (
     <div>
       <h1 className="headline">Customers</h1>
       
+      {/* Display success or error message */}
+      {message && <p className="message">{message}</p>}
+
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
         <h2>Register as Customer</h2>
         <div>
           <label>Customer Name:</label>
-          <input
+          <input className="anmeldung"
             type="text"
             name="CustomerName"
             value={newCustomer.CustomerName}
@@ -124,7 +136,7 @@ function CustomerList() {
         </div>
         <div>
           <label>Address:</label>
-          <input
+          <input className="anmeldung" 
             type="text"
             name="Address"
             value={newCustomer.Address}
@@ -134,7 +146,7 @@ function CustomerList() {
         </div>
         <div>
           <label>Postal Code:</label>
-          <input
+          <input className="anmeldung"
             type="text"
             name="PostalCode"
             value={newCustomer.PostalCode}
@@ -144,7 +156,7 @@ function CustomerList() {
         </div>
         <div>
           <label>Country:</label>
-          <input
+          <input className="anmeldung"
             type="text"
             name="Country"
             value={newCustomer.Country}
@@ -152,8 +164,7 @@ function CustomerList() {
             required
           />
         </div>
-        <button type="submit">Register</button>
-        {message && <p>{message}</p>}
+        <button className="anmelde-button" type="submit">Register</button>
       </form>
 
       {/* Customer Table */}
@@ -168,7 +179,7 @@ function CustomerList() {
           </tr>
         </thead>
         <tbody>
-          {displayedCustomers.map(customer => (
+          {customers.map(customer => (
             <tr key={customer.CustomerID} className="tabellen_spalte">
               <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (
