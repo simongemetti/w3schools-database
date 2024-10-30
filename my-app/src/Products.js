@@ -9,7 +9,9 @@ function ProductList() {
   const [editedProduct, setEditedProduct] = useState({});
   const [newProduct, setNewProduct] = useState({ ProductName: '', Price: '' });
   const [message, setMessage] = useState('');
-  const [refresh, setRefresh] = useState(false); // State-Variable zum Neuladen der Produkte
+  const [refresh, setRefresh] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // Suchbegriff
+  const [sortOrder, setSortOrder] = useState('asc'); // Sortierreihenfolge
 
   // Fetch products from API on component load or when refresh state changes
   useEffect(() => {
@@ -18,6 +20,11 @@ function ProductList() {
       .then(data => setProducts(data.slice(-10).reverse()))
       .catch(error => console.error("Error fetching products:", error));
   }, [refresh]);
+
+  // Filtered and sorted products based on search term and sort order
+  const filteredProducts = products
+    .filter(product => product.ProductName.toLowerCase().includes(searchTerm.toLowerCase())) // Filter
+    .sort((a, b) => sortOrder === 'asc' ? a.ProductName.localeCompare(b.ProductName) : b.ProductName.localeCompare(a.ProductName)); // Sortierung
 
   // Update form input for editing
   const handleInputChange = (productId, field, value) => {
@@ -45,7 +52,7 @@ function ProductList() {
           setProducts(products.map(product =>
             product.ProductID === productId ? { ...product, ...updatedProduct } : product
           ));
-          setEditableProductId(null); // Exit edit mode
+          setEditableProductId(null);
           setMessage('Product updated successfully!');
         } else {
           setMessage('Failed to update product.');
@@ -104,7 +111,7 @@ function ProductList() {
         });
         setMessage('Product registered successfully!');
         setNewProduct({ ProductName: '', Price: '' });
-        setRefresh(!refresh); // Toggle refresh to reload products
+        setRefresh(!refresh);
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -114,12 +121,28 @@ function ProductList() {
     }
   };
 
+  // Handlers for new features (Search, Sort)
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  const toggleSortOrder = () => setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+
   return (
     <div>
       <h1 className="headline">Products</h1>
-      
-      {/* Display success or error message */}
       {message && <p className="message">{message}</p>}
+
+      {/* Search Feature */}
+      <input 
+        type="text" 
+        placeholder="Search by product name" 
+        value={searchTerm} 
+        onChange={handleSearchChange} 
+        className="search-input" 
+      />
+
+      {/* Sort Button */}
+      <button onClick={toggleSortOrder} className="sort-button">
+        Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
+      </button>
 
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
@@ -157,7 +180,7 @@ function ProductList() {
           </tr>
         </thead>
         <tbody>
-          {products.map(product => (
+          {filteredProducts.map(product => (
             <tr key={product.ProductID} className="tabellen_spalte">
               <td className="table_data">
                 {editableProductId === product.ProductID ? (

@@ -9,7 +9,9 @@ function CustomerList() {
   const [editedCustomer, setEditedCustomer] = useState({});
   const [newCustomer, setNewCustomer] = useState({ CustomerName: '', Address: '', PostalCode: '', Country: '' });
   const [message, setMessage] = useState('');
-  const [refresh, setRefresh] = useState(false); // Neue State-Variable für das Neuladen
+  const [refresh, setRefresh] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // Suchbegriff
+  const [sortOrder, setSortOrder] = useState('asc'); // Sortierreihenfolge
 
   // Fetch the last 10 customers from the API on component load or refresh
   useEffect(() => {
@@ -17,7 +19,12 @@ function CustomerList() {
       .then(response => response.json())
       .then(data => setCustomers(data.slice(-10).reverse()))
       .catch(error => console.error("Error fetching customers:", error));
-  }, [refresh]); // Neu laden bei Änderungen an `refresh`
+  }, [refresh]);
+
+  // Filtered and sorted customers based on search term and sort order
+  const filteredCustomers = customers
+    .filter(customer => customer.CustomerName.toLowerCase().includes(searchTerm.toLowerCase())) // Filter
+    .sort((a, b) => sortOrder === 'asc' ? a.CustomerName.localeCompare(b.CustomerName) : b.CustomerName.localeCompare(a.CustomerName)); // Sortierung
 
   // Update form input for editing
   const handleInputChange = (customerId, field, value) => {
@@ -104,7 +111,7 @@ function CustomerList() {
         });
         setMessage('Customer registered successfully!');
         setNewCustomer({ CustomerName: '', Address: '', PostalCode: '', Country: '' });
-        setRefresh(!refresh); // Löst das Neuladen aus
+        setRefresh(!refresh);
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -114,12 +121,28 @@ function CustomerList() {
     }
   };
 
+  // Handlers for new features (Search, Sort)
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  const toggleSortOrder = () => setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+
   return (
     <div>
       <h1 className="headline">Customers</h1>
-      
-      {/* Display success or error message */}
       {message && <p className="message">{message}</p>}
+
+      {/* Search Feature */}
+      <input 
+        type="text" 
+        placeholder="Search by name" 
+        value={searchTerm} 
+        onChange={handleSearchChange} 
+        className="search-input" 
+      />
+
+      {/* Sort Button */}
+      <button onClick={toggleSortOrder} className="sort-button">
+        Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
+      </button>
 
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
@@ -179,90 +202,23 @@ function CustomerList() {
           </tr>
         </thead>
         <tbody>
-          {customers.map(customer => (
+          {filteredCustomers.map(customer => (
             <tr key={customer.CustomerID} className="tabellen_spalte">
+              <td className="table_data">{customer.CustomerName}</td>
+              <td className="table_data">{customer.Address}</td>
+              <td className="table_data">{customer.PostalCode}</td>
+              <td className="table_data">{customer.Country}</td>
               <td className="table_data">
-                {editableCustomerId === customer.CustomerID ? (
-                  <input
-                    type="text"
-                    value={editedCustomer[customer.CustomerID]?.CustomerName || customer.CustomerName}
-                    onChange={(e) =>
-                      handleInputChange(customer.CustomerID, 'CustomerName', e.target.value)
-                    }
-                  />
-                ) : (
-                  customer.CustomerName
-                )}
-              </td>
-              <td className="table_data">
-                {editableCustomerId === customer.CustomerID ? (
-                  <input
-                    type="text"
-                    value={editedCustomer[customer.CustomerID]?.Address || customer.Address}
-                    onChange={(e) =>
-                      handleInputChange(customer.CustomerID, 'Address', e.target.value)
-                    }
-                  />
-                ) : (
-                  customer.Address
-                )}
-              </td>
-              <td className="table_data">
-                {editableCustomerId === customer.CustomerID ? (
-                  <input
-                    type="text"
-                    value={editedCustomer[customer.CustomerID]?.PostalCode || customer.PostalCode}
-                    onChange={(e) =>
-                      handleInputChange(customer.CustomerID, 'PostalCode', e.target.value)
-                    }
-                  />
-                ) : (
-                  customer.PostalCode
-                )}
-              </td>
-              <td className="table_data">
-                {editableCustomerId === customer.CustomerID ? (
-                  <input
-                    type="text"
-                    value={editedCustomer[customer.CustomerID]?.Country || customer.Country}
-                    onChange={(e) =>
-                      handleInputChange(customer.CustomerID, 'Country', e.target.value)
-                    }
-                  />
-                ) : (
-                  customer.Country
-                )}
-              </td>
-              <td className="table_data">
+                {/* Actions like Edit and Delete */}
                 {editableCustomerId === customer.CustomerID ? (
                   <div>
-                    <button 
-                      className="button2"
-                      onClick={() => handleSave(customer.CustomerID)}
-                    >
-                      Save
-                    </button>
-                    <button 
-                      className="button1"
-                      onClick={() => setEditableCustomerId(null)}
-                    >
-                      Cancel
-                    </button>
+                    <button className="button2" onClick={() => handleSave(customer.CustomerID)}>Save</button>
+                    <button className="button1" onClick={() => setEditableCustomerId(null)}>Cancel</button>
                   </div>
                 ) : (
                   <div>
-                    <button 
-                      className="button2"
-                      onClick={() => setEditableCustomerId(customer.CustomerID)}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      className="button1"
-                      onClick={() => handleDelete(customer.CustomerID)}
-                    >
-                      Delete
-                    </button>
+                    <button className="button2" onClick={() => setEditableCustomerId(customer.CustomerID)}>Edit</button>
+                    <button className="button1" onClick={() => handleDelete(customer.CustomerID)}>Delete</button>
                   </div>
                 )}
               </td>

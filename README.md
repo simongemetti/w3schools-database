@@ -69,3 +69,6 @@ Setup of my own Single Page Application
 
 ### 28.10.2024
 Added CRUD functionality for ProductList and CategoryList components with consistent styling to match the CustomerList component.
+
+### 30.10.2024
+Node Version Update und diverse Bug fixes

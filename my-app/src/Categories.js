@@ -9,7 +9,9 @@ function CategoryList() {
   const [editedCategory, setEditedCategory] = useState({});
   const [newCategory, setNewCategory] = useState({ CategoryName: '', Description: '' });
   const [message, setMessage] = useState('');
-  const [refresh, setRefresh] = useState(false); // State-Variable zum Neuladen der Kategorien
+  const [refresh, setRefresh] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // Suchbegriff
+  const [sortOrder, setSortOrder] = useState('asc'); // Sortierreihenfolge
 
   // Fetch categories from API on component load or when refresh state changes
   useEffect(() => {
@@ -18,6 +20,11 @@ function CategoryList() {
       .then(data => setCategories(data.slice(-10).reverse()))
       .catch(error => console.error("Error fetching categories:", error));
   }, [refresh]);
+
+  // Filtered and sorted categories based on search term and sort order
+  const filteredCategories = categories
+    .filter(category => category.CategoryName.toLowerCase().includes(searchTerm.toLowerCase())) // Filter
+    .sort((a, b) => sortOrder === 'asc' ? a.CategoryName.localeCompare(b.CategoryName) : b.CategoryName.localeCompare(a.CategoryName)); // Sortierung
 
   // Update form input for editing
   const handleInputChange = (categoryId, field, value) => {
@@ -104,7 +111,7 @@ function CategoryList() {
         });
         setMessage('Category registered successfully!');
         setNewCategory({ CategoryName: '', Description: '' });
-        setRefresh(!refresh); // Toggle refresh to reload categories
+        setRefresh(!refresh);
       } else {
         setMessage('Registration failed. Please try again.');
       }
@@ -114,12 +121,28 @@ function CategoryList() {
     }
   };
 
+  // Handlers for new features (Search, Sort)
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  const toggleSortOrder = () => setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+
   return (
     <div>
       <h1 className="headline">Categories</h1>
-
-      {/* Display success or error message */}
       {message && <p className="message">{message}</p>}
+
+      {/* Search Feature */}
+      <input 
+        type="text" 
+        placeholder="Search by category name" 
+        value={searchTerm} 
+        onChange={handleSearchChange} 
+        className="search-input" 
+      />
+
+      {/* Sort Button */}
+      <button onClick={toggleSortOrder} className="sort-button">
+        Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
+      </button>
 
       {/* Registration Form */}
       <form onSubmit={handleRegister}>
@@ -157,7 +180,7 @@ function CategoryList() {
           </tr>
         </thead>
         <tbody>
-          {categories.map(category => (
+          {filteredCategories.map(category => (
             <tr key={category.CategoryID} className="tabellen_spalte">
               <td className="table_data">
                 {editableCategoryId === category.CategoryID ? (
