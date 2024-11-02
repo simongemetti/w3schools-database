@@ -1,4 +1,3 @@
-// CustomerList.js
 import React, { useEffect, useState } from 'react';
 
 const api = process.env.REACT_APP_API_URL || 'http://localhost:3000';
@@ -10,10 +9,9 @@ function CustomerList() {
   const [newCustomer, setNewCustomer] = useState({ CustomerName: '', Address: '', PostalCode: '', Country: '' });
   const [message, setMessage] = useState('');
   const [refresh, setRefresh] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // State für die Suche
-  const [sortOrder, setSortOrder] = useState('asc'); // State für die Sortierreihenfolge
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
 
-  // Fetch the last 10 customers from the API on component load or refresh
   useEffect(() => {
     fetch(`${api}/customers?limit=10&sort=desc`)
       .then(response => response.json())
@@ -21,7 +19,6 @@ function CustomerList() {
       .catch(error => console.error("Error fetching customers:", error));
   }, [refresh]);
 
-  // Update form input for editing
   const handleInputChange = (customerId, field, value) => {
     setEditedCustomer(prev => ({
       ...prev,
@@ -32,7 +29,6 @@ function CustomerList() {
     }));
   };
 
-  // Save customer updates
   const handleSave = (customerId) => {
     const updatedCustomer = editedCustomer[customerId];
     fetch(`${api}/customers/${customerId}`, {
@@ -59,7 +55,6 @@ function CustomerList() {
       });
   };
 
-  // Delete a customer
   const handleDelete = (customerId) => {
     fetch(`${api}/customers/${customerId}`, {
       method: 'DELETE',
@@ -78,7 +73,6 @@ function CustomerList() {
       });
   };
 
-  // Register a new customer
   const handleNewCustomerChange = (e) => {
     const { name, value } = e.target;
     setNewCustomer({
@@ -116,7 +110,6 @@ function CustomerList() {
     }
   };
 
-  // Filter and sort customers based on search term and sort order
   const filteredAndSortedCustomers = customers
     .filter(customer => 
       customer.CustomerName && customer.CustomerName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -136,7 +129,6 @@ function CustomerList() {
       
       {message && <p className="message">{message}</p>}
 
-      {/* Search and Sort */}
       <input 
         type="text" 
         placeholder="Search by customer name" 
@@ -148,7 +140,6 @@ function CustomerList() {
         Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
       </button>
 
-      {/* Registration Form */}
       <form onSubmit={handleRegister}>
         <h2>Register as Customer</h2>
         <div>
@@ -194,7 +185,6 @@ function CustomerList() {
         <button className="anmelde-button" type="submit">Register</button>
       </form>
 
-      {/* Customer Table */}
       <table className="tabelle1">
         <thead>
           <tr>
@@ -263,33 +253,13 @@ function CustomerList() {
               <td className="table_data">
                 {editableCustomerId === customer.CustomerID ? (
                   <div>
-                    <button 
-                      className="button2"
-                      onClick={() => handleSave(customer.CustomerID)}
-                    >
-                      Save
-                    </button>
-                    <button 
-                      className="button1"
-                      onClick={() => setEditableCustomerId(null)}
-                    >
-                      Cancel
-                    </button>
+                    <button className="button2" onClick={() => handleSave(customer.CustomerID)}>Save</button>
+                    <button className="button1" onClick={() => setEditableCustomerId(null)}>Cancel</button>
                   </div>
                 ) : (
                   <div>
-                    <button 
-                      className="button2"
-                      onClick={() => setEditableCustomerId(customer.CustomerID)}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      className="button1"
-                      onClick={() => handleDelete(customer.CustomerID)}
-                    >
-                      Delete
-                    </button>
+                    <button className="button2" onClick={() => setEditableCustomerId(customer.CustomerID)}>Edit</button>
+                    <button className="button1" onClick={() => handleDelete(customer.CustomerID)}>Delete</button>
                   </div>
                 )}
               </td>

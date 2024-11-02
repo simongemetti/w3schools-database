@@ -1,4 +1,3 @@
-// CategoryList.js
 import React, { useEffect, useState } from 'react';
 
 const api = process.env.REACT_APP_API_URL || 'http://localhost:3000';
@@ -10,10 +9,9 @@ function CategoryList() {
   const [newCategory, setNewCategory] = useState({ CategoryName: '', Description: '' });
   const [message, setMessage] = useState('');
   const [refresh, setRefresh] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // State für die Suche
-  const [sortOrder, setSortOrder] = useState('asc'); // State für die Sortierreihenfolge
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
 
-  // Fetch categories from API on component load or when refresh state changes
   useEffect(() => {
     fetch(`${api}/categories?limit=10&sort=desc`)
       .then(response => response.json())
@@ -21,7 +19,6 @@ function CategoryList() {
       .catch(error => console.error("Error fetching categories:", error));
   }, [refresh]);
 
-  // Update form input for editing
   const handleInputChange = (categoryId, field, value) => {
     setEditedCategory(prev => ({
       ...prev,
@@ -32,7 +29,6 @@ function CategoryList() {
     }));
   };
 
-  // Save category updates
   const handleSave = (categoryId) => {
     const updatedCategory = editedCategory[categoryId];
     fetch(`${api}/categories/${categoryId}`, {
@@ -59,7 +55,6 @@ function CategoryList() {
       });
   };
 
-  // Delete a category
   const handleDelete = (categoryId) => {
     fetch(`${api}/categories/${categoryId}`, {
       method: 'DELETE',
@@ -78,7 +73,6 @@ function CategoryList() {
       });
   };
 
-  // Register a new category
   const handleNewCategoryChange = (e) => {
     const { name, value } = e.target;
     setNewCategory({
@@ -116,7 +110,6 @@ function CategoryList() {
     }
   };
 
-  // Filter and sort categories based on search term and sort order
   const filteredAndSortedCategories = categories
     .filter(category => 
       category.CategoryName && category.CategoryName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -136,7 +129,6 @@ function CategoryList() {
 
       {message && <p className="message">{message}</p>}
 
-      {/* Search and Sort */}
       <input
         type="text"
         placeholder="Search by category name"
@@ -148,7 +140,6 @@ function CategoryList() {
         Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
       </button>
 
-      {/* Registration Form */}
       <form onSubmit={handleRegister}>
         <h2>Register a Category</h2>
         <div>
@@ -174,7 +165,6 @@ function CategoryList() {
         <button className="anmelde-button" type="submit">Register</button>
       </form>
 
-      {/* Category Table */}
       <table className="tabelle1">
         <thead>
           <tr>
@@ -215,33 +205,13 @@ function CategoryList() {
               <td className="table_data">
                 {editableCategoryId === category.CategoryID ? (
                   <div>
-                    <button 
-                      className="button2"
-                      onClick={() => handleSave(category.CategoryID)}
-                    >
-                      Save
-                    </button>
-                    <button 
-                      className="button1"
-                      onClick={() => setEditableCategoryId(null)}
-                    >
-                      Cancel
-                    </button>
+                    <button className="button2" onClick={() => handleSave(category.CategoryID)}>Save</button>
+                    <button className="button1" onClick={() => setEditableCategoryId(null)}>Cancel</button>
                   </div>
                 ) : (
                   <div>
-                    <button 
-                      className="button2"
-                      onClick={() => setEditableCategoryId(category.CategoryID)}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      className="button1"
-                      onClick={() => handleDelete(category.CategoryID)}
-                    >
-                      Delete
-                    </button>
+                    <button className="button2" onClick={() => setEditableCategoryId(category.CategoryID)}>Edit</button>
+                    <button className="button1" onClick={() => handleDelete(category.CategoryID)}>Delete</button>
                   </div>
                 )}
               </td>

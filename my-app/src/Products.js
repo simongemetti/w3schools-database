@@ -1,4 +1,3 @@
-// ProductList.js
 import React, { useEffect, useState } from 'react';
 
 const api = process.env.REACT_APP_API_URL || 'http://localhost:3000';
@@ -111,7 +110,6 @@ function ProductList() {
     }
   };
 
-  // Filter and sort products based on search term and sort order
   const filteredAndSortedProducts = products
     .filter(product => 
       product.ProductName && product.ProductName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -131,7 +129,6 @@ function ProductList() {
 
       {message && <p className="message">{message}</p>}
 
-      {/* Search and Sort */}
       <input
         type="text"
         placeholder="Search by product name"
@@ -143,7 +140,6 @@ function ProductList() {
         Sort by Name ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
       </button>
 
-      {/* Registration Form */}
       <form onSubmit={handleRegister}>
         <h2>Register a Product</h2>
         <div>
@@ -171,7 +167,6 @@ function ProductList() {
         <button className="anmelde-button" type="submit">Register</button>
       </form>
 
-      {/* Product Table */}
       <table className="tabelle1">
         <thead>
           <tr>
