@@ -77,35 +77,35 @@ A user-friendly navigation bar with links to the most important pages: Welcome, 
 Introduction to the application with a description of the most important functions and a call-to-action link for customer management.
 
 3. Customer page
-Show customers: Lists the last 10 customers, sorted by entry date.
-Edit customers: Editing function for existing customer data.
-Delete customers: Removes selected customers from the list.
-Register new customer: Form for entering new customers with the fields CustomerName, Address, PostalCode and Country.
-Search and sorting: Allows you to search by name and sort the list alphabetically (ascending and descending).
+- Show customers: Lists the last 10 customers, sorted by entry date.
+- Edit customers: Editing function for existing customer data.
+- Delete customers: Removes selected customers from the list.
+- Register new customer: Form for entering new customers with the fields CustomerName, Address, PostalCode and Country.
+- Search and sorting: Allows you to search by name and sort the list alphabetically (ascending and descending).
 
 4. Category page
-Show categories: Shows the last 10 categories added.
-Edit categories: Editing option for existing categories.
-Delete categories: Removes selected categories.
-Register new category: Form for entering new categories with the CategoryName and Description fields.
-Search and sorting: Supports searching and alphabetical sorting of categories.
+- Show categories: Shows the last 10 categories added.
+- Edit categories: Editing option for existing categories.
+- Delete categories: Removes selected categories.
+- Register new category: Form for entering new categories with the CategoryName and Description fields.
+- Search and sorting: Supports searching and alphabetical sorting of categories.
 
 5. Product page
-Show products: Lists the last 10 products added.
-Edit products: Editing option for existing products.
-Delete products: Removes selected products.
-Register new product: Form for new products with the fields ProductName and Price.
-Search and sort: Allows you to search and sort by product name.
+- Show products: Lists the last 10 products added.
+- Edit products: Editing option for existing products.
+- Delete products: Removes selected products.
+- Register new product: Form for new products with the fields ProductName and Price.
+- Search and sort: Allows you to search and sort by product name.
 
 6. CSS and UI-Design
-Uniform design with layout for all components.
-Clear user guidance and legible display for all important functions.
+- Uniform design with layout for all components.
+- Clear user guidance and legible display for all important functions.
 
 7. Error and success messages
-Users are informed of every action (successful or incorrect) by messages, e.g. successful saving, deletion or registration.
+- Users are informed of every action (successful or incorrect) by messages, e.g. successful saving, deletion or registration.
 
 8. API-Integration
-All data operations are managed via a REST API that is configured to REACT_APP_API_URL.
+- All data operations are managed via a REST API that is configured to REACT_APP_API_URL.
 
 ## Tech Stack
 1. Frontend: HTML5 and React.js
