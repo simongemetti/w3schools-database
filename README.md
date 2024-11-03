@@ -108,9 +108,9 @@ Users are informed of every action (successful or incorrect) by messages, e.g. s
 All data operations are managed via a REST API that is configured to REACT_APP_API_URL.
 
 ## Tech Stack
-Frontend: HTML5 and React.js
-Styling: CSS3
-Backend API: Local JSON server or other API endpoint (configurable via .env).
+1. Frontend: HTML5 and React.js
+2. Styling: CSS3
+3. Backend API: Local JSON server or other API endpoint (configurable via .env).
 
 
 ## Journal
